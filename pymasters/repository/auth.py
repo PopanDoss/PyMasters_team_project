@@ -11,7 +11,7 @@ from starlette import status
 from pymasters.database.models import User
 from pymasters.database.db import get_db
 
-from settings import SECRET_KEY, ALGORITHM, oauth2_scheme
+from pymasters.settings import SECRET_KEY, ALGORITHM, oauth2_scheme
 
 class Hash:
 

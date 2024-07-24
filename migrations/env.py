@@ -6,8 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from pymasters.database.models import Base
-from pymasters.database.db import SQLALCHEMY_DATABASE_URL
-
+#from pymasters.database.db import SQLALCHEMY_DATABASE_URL
+from pymasters.settings import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

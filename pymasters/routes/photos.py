@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from services.cloudinary_service import upload_photo_to_cloudinary, delete_photo_from_cloudinary
+from pymasters.services.cloudinary_service import upload_photo_to_cloudinary, delete_photo_from_cloudinary
 
 from pymasters.database.db import get_db
 from pymasters.database.models import User, Photos, Tags

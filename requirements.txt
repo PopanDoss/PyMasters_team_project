@@ -12,4 +12,4 @@ fastapi-mail==1.4.1
 slowapi
 cloudinary
 sphinx
-
+pydantic-settings
