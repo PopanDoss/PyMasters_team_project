@@ -24,7 +24,7 @@ def create_comment(photo_id: int, comment: CommentCreate, db: Session = Depends(
 
 @router.put("/comments/{comment_id}/", response_model=Comment)
 def update_comment(comment_id: int, comment: CommentUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    db_comment = db.query(Comment).filter(Comment.id == comment_id).first()
+    db_comment = db.query(table_Comment).filter(table_Comment.id == comment_id).first()
     if db_comment is None:
         raise HTTPException(status_code=404, detail="Comment not found")
     if db_comment.user_id != current_user.id:
