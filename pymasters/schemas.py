@@ -1,15 +1,29 @@
 from datetime import datetime
-
 from typing import List, Optional
 from fastapi import UploadFile
-
 from pydantic import BaseModel, Field, EmailStr
 
+class TransformationBase(BaseModel):
+    transformation_url: str
+    qr_code_url: str
+
+    class Config:
+        from_attributes = True
+
+class TransformationCreate(BaseModel):
+    transformation: str  # Name or type of transformation
+
+class TransformationDisplay(TransformationBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 class PhotoBase(BaseModel):
     photo_urls: str
     description: Optional[str] = None
-    tags: List[str] = []  # Додано поле для тегів
+    tags: List[str] = []
 
 class PhotoCreate(BaseModel):
     file: UploadFile
@@ -24,10 +38,10 @@ class PhotoDisplay(BaseModel):
     photo_urls: str
     description: Optional[str] = None
     tags: List[str] = []
+    transformations: List[TransformationDisplay] = []  # Add transformations field
 
     class Config:
         from_attributes = True
-
 
 class CommentBase(BaseModel):
     content: str
@@ -53,23 +67,18 @@ class Comment(CommentInDBBase):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
-    
+
 class UserModel(BaseModel):
     username: str
     password: str
 
-
 class EmailSchema(BaseModel):
-
     email: EmailStr
-
 
 class RequestEmail(BaseModel):
-
     email: EmailStr
 
-
 class UserDisplayModel(BaseModel):
-
     email: str
     avatar_urls: str
+
