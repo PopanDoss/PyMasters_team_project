@@ -4,9 +4,9 @@ from fastapi_mail import FastMail, MessageSchema, MessageType
 from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
-from repository.users_repo import UserService
-from services.auth_service import create_email_token
-from settings import conf
+from pymasters.repository.users_repo import UserService
+from pymasters.services.auth_service import create_email_token
+from pymasters.settings import conf
 
 async def send_email(email: EmailStr, host: str):
     """
