@@ -4,9 +4,10 @@ from typing import List
 import logging
 
 from pymasters.services.cloudinary_service import upload_photo_to_cloudinary, delete_photo_from_cloudinary, transform_photo
+
 from pymasters.database.db import get_db
 from pymasters.database.models import User, Photos, Tags, Transformation
-from pymasters.repository.auth import get_current_user, get_admin_user, get_moderator_user
+from pymasters.repository.auth import get_current_user, get_admin_user
 from pymasters.schemas import PhotoBase, PhotoCreate, PhotoUpdate, PhotoDisplay, TransformationDisplay
 
 router = APIRouter(prefix="/photos", tags=["photos"])
@@ -22,7 +23,17 @@ async def upload_photo(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Upload a photo with description and tags
+    Upload a photo with description and tags.
+
+    Args:
+        file (UploadFile): The photo file to upload.
+        description (str): The description of the photo.
+        tags (List[str]): The tags associated with the photo.
+        db (Session): The database session.
+        current_user (User): The currently authenticated user.
+
+    Returns:
+        PhotoDisplay: The uploaded photo details.
     """
     tags = tags or []
 
@@ -68,7 +79,19 @@ async def transform_photo_endpoint(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Apply transformation to photo and generate QR code
+    Apply transformation to photo and generate QR code.
+
+    Args:
+        photo_id (int): The ID of the photo to transform.
+        transformation (str): The transformation to apply.
+        db (Session): The database session.
+        current_user (User): The currently authenticated user.
+
+    Returns:
+        TransformationDisplay: The transformed photo details.
+
+    Raises:
+        HTTPException: If the photo is not found or transformation fails.
     """
     logger.info(f"Requested transformation: {transformation}")
     
@@ -112,11 +135,21 @@ async def delete_photo(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete a photo
+    Delete a photo.
+
+    Args:
+        photo_id (int): The ID of the photo to delete.
+        db (Session): The database session.
+        current_user (User): The currently authenticated user.
+
+    Returns:
+        dict: A message indicating successful deletion.
+
+    Raises:
+        HTTPException: If the photo is not found or the user is not authorized to delete the photo.
     """
     photo = db.query(Photos).filter(Photos.id == photo_id).first()
 
-    # Check if the current user is an admin or the owner of the photo
     if not photo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
 
@@ -125,7 +158,6 @@ async def delete_photo(
         if not admin_user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Operation not permitted")
 
-    # Delete the photo from Cloudinary
     delete_photo_from_cloudinary(photo.photo_urls)
     db.delete(photo)
     db.commit()
@@ -140,11 +172,22 @@ async def update_photo(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update photo description
+    Update photo description.
+
+    Args:
+        photo_id (int): The ID of the photo to update.
+        description (str): The new description for the photo.
+        db (Session): The database session.
+        current_user (User): The currently authenticated user.
+
+    Returns:
+        dict: A message indicating successful update.
+
+    Raises:
+        HTTPException: If the photo is not found or the user is not authorized to update the photo.
     """
     photo = db.query(Photos).filter(Photos.id == photo_id).first()
 
-    # Check if the current user is an admin or the owner of the photo
     if not photo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
 
@@ -165,11 +208,21 @@ async def get_photo(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a photo by unique ID
+    Get a photo by unique ID.
+
+    Args:
+        photo_id (int): The ID of the photo to retrieve.
+        db (Session): The database session.
+        current_user (User): The currently authenticated user.
+
+    Returns:
+        PhotoDisplay: The retrieved photo details.
+
+    Raises:
+        HTTPException: If the photo is not found or the user is not authorized to view the photo.
     """
     photo = db.query(Photos).filter(Photos.id == photo_id).first()
 
-    # Check if the current user is an admin or the owner of the photo
     if not photo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
 
@@ -186,12 +239,3 @@ async def get_photo(
         description=photo.description,
         tags=tag_names
     )
-
-
-
-
-
-
-
-
-
